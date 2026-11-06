@@ -1,0 +1,22 @@
+# INERT design reference. Not an executable workflow or copy-paste deploy recipe.
+# Outside .github/workflows; no active GitHub Actions workflow in this repo.
+# Protected main push, never untrusted PR release. Pin reviewed action full SHAs
+# if an authorized team later implements this design. No cloud commands here.
+on:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  test:
+    # source tests; read-only validation
+  build-push:
+    needs: test
+    # build once; same-image smoke; push tested image; output registry digest
+    # id-token: write only here if publisher authenticates using WIF
+  deploy:
+    needs: build-push
+    # id-token: write only here if deployer authenticates using WIF
+    # deploy registry URL@sha256:digest; verify actual revision/image/readiness
+# needs controls order, NOT image transfer. Use verified image artifact transport
+# or controlled registry candidates by digest. Separate runners share no daemon.
